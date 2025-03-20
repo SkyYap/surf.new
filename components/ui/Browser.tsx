@@ -50,8 +50,19 @@ export function Browser() {
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       // Verify message origin matches debugUrl
-      const debugUrlOrigin = new URL(debugUrl || "").origin;
-      if (event.origin !== debugUrlOrigin) return;
+      let debugUrlOrigin = "";
+      try {
+        // Only create URL if debugUrl is a valid URL string
+        if (debugUrl && debugUrl.startsWith('http')) {
+          debugUrlOrigin = new URL(debugUrl).origin;
+        }
+      } catch (e) {
+        console.warn("Invalid debug URL:", debugUrl);
+        return; // Exit early if URL is invalid
+      }
+      
+      // Only check origin if we have a valid origin to compare against
+      if (debugUrlOrigin && event.origin !== debugUrlOrigin) return;
 
       // Handle different message types
       if (event.data?.type === "navigation") {
