@@ -239,12 +239,14 @@ async def get_ollama_models():
         
         return {"models": models}
     except subprocess.CalledProcessError as e:
+        # Return empty list if ollama is installed but not running
+        if "ollama list" in str(e.cmd):
+            return {"models": []}
+        # Otherwise, propagate the error
         raise HTTPException(
             status_code=500, 
             detail=f"Failed to fetch Ollama models: {e.stderr}"
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=500, 
-            detail=f"Error fetching Ollama models: {str(e)}"
-        )
+        # Return empty list instead of error for any exception
+        return {"models": []}
