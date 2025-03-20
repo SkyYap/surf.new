@@ -9,11 +9,17 @@ import SuspendedPostHogPageView from "@/components/PostHogPageView";
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-      capture_pageview: false, // Disable automatic pageview capture, as we capture manually
-      capture_pageleave: true,
-    });
+    // Only initialize PostHog if API key is available
+    const apiKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+    const apiHost = process.env.NEXT_PUBLIC_POSTHOG_HOST;
+    
+    if (apiKey && apiKey.trim() !== '') {
+      posthog.init(apiKey, {
+        api_host: apiHost,
+        capture_pageview: false, // Disable automatic pageview capture, as we capture manually
+        capture_pageleave: true,
+      });
+    }
   }, []);
 
   return (
