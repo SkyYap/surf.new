@@ -37,6 +37,7 @@ import { AgentSettings, ModelSettings, useSettings } from "@/app/contexts/Settin
 import { useSteelContext } from "@/app/contexts/SteelContext";
 import { useAgents } from "@/app/hooks/useAgents";
 import { useOllamaModels } from "@/app/hooks/useOllamaModels";
+import ClientSideContent from "@/app/components/ClientSideContent";
 
 export function SettingsButton() {
   const { currentSettings } = useSettings();
@@ -68,7 +69,9 @@ export function SettingsButton() {
             <Settings className="size-5" />
           </div>
           <div className="max-w-[60px] truncate md:max-w-[100px] lg:max-w-[160px]">
-            {currentSettings?.selectedAgent}
+            <ClientSideContent fallback="">
+              {currentSettings?.selectedAgent}
+            </ClientSideContent>
           </div>
         </Button>
       </SheetTrigger>

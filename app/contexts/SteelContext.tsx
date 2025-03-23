@@ -94,7 +94,8 @@ export function SteelProvider({ children }: { children: React.ReactNode }) {
   async function createSession() {
     console.info("🚀 Attempting to create new session", { currentSettings });
     try {
-      if (currentSettings) {
+      // Only try to create a session if we have settings and we're on the client side
+      if (currentSettings?.selectedAgent) {
         setIsCreatingSession(true);
         console.info("⏳ Creating session with settings:", {
           agent_type: currentSettings.selectedAgent,
@@ -117,6 +118,9 @@ export function SteelProvider({ children }: { children: React.ReactNode }) {
         setSessionTimeElapsed(0);
         setIsExpired(false);
         return session;
+      } else {
+        console.warn("⚠️ Cannot create session: settings not available or missing selectedAgent");
+        return null;
       }
     } catch (err) {
       console.error("❌ Failed to create session:", err);

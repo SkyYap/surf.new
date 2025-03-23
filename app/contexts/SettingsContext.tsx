@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
 export interface ModelSettings {
@@ -37,15 +37,24 @@ interface SettingsContextType {
   updateSettings: (newSettings: {
     [key in keyof SurfSettings]: SurfSettings[key];
   }) => void;
+  isClient: boolean;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
+  // Use a state variable to track client-side rendering
+  const [isClient, setIsClient] = useState(false);
+  
   const [currentSettings, setCurrentSettings] = useLocalStorage<SurfSettings | null>(
     "chatSettings",
     null
   );
+
+  // Effect to set isClient to true when component mounts (client-side only)
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const updateSettings = (newSettings: {
     [key in keyof SurfSettings]: SurfSettings[key];
@@ -60,8 +69,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   return (
     <SettingsContext.Provider
       value={{
-        currentSettings,
+        currentSettings: isClient ? currentSettings : null,
         updateSettings,
+        isClient,
       }}
     >
       {children}
